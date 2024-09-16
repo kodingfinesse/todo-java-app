@@ -10,7 +10,7 @@ public class Main {
     private static JList<String> taskList;
 
     public static void main(String[] args) {
-        // Set a modern look and feel
+        // Set modern look and feel
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Exception e) {
@@ -22,6 +22,7 @@ public class Main {
         frame.setSize(500, 400);
         frame.setLayout(new BorderLayout());
 
+        // Initialize task list with custom rendering
         taskList = new JList<>(listModel);
         taskList.setCellRenderer(new TaskCellRenderer());
         taskList.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -32,10 +33,12 @@ public class Main {
         panel.setLayout(new BorderLayout());
         panel.setBackground(new Color(240, 240, 240));
 
+        // Input field for adding tasks
         JTextField taskField = new JTextField();
         taskField.setFont(new Font("Arial", Font.PLAIN, 16));
         panel.add(taskField, BorderLayout.CENTER);
 
+        // Button to add tasks
         JButton addButton = new JButton("Add Task");
         addButton.setBackground(new Color(51, 153, 255));
         addButton.setForeground(Color.WHITE);
@@ -43,6 +46,7 @@ public class Main {
         addButton.setFont(new Font("Arial", Font.BOLD, 14));
         panel.add(addButton, BorderLayout.EAST);
 
+        // Button to remove tasks
         JButton removeButton = new JButton("Remove Task");
         removeButton.setBackground(new Color(255, 77, 77));
         removeButton.setForeground(Color.WHITE);
@@ -52,6 +56,7 @@ public class Main {
 
         frame.add(panel, BorderLayout.SOUTH);
 
+        // Action listener to add a task
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,22 +64,24 @@ public class Main {
                 if (!task.isEmpty()) {
                     listModel.addElement(task);
                     taskField.setText("");
-                    saveTasks(); // Autosave after adding a task
+                    saveTasks(); // Save task list after adding
                 }
             }
         });
 
+        // Action listener to remove a task
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = taskList.getSelectedIndex();
                 if (index != -1) {
                     listModel.remove(index);
-                    saveTasks(); // Autosave after removing a task
+                    saveTasks(); // Save task list after removal
                 }
             }
         });
 
+        // Enable task editing on double-click
         taskList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (e.getClickCount() == 2) {
@@ -84,7 +91,7 @@ public class Main {
                         String newTask = JOptionPane.showInputDialog(frame, "Edit Task:", currentTask);
                         if (newTask != null && !newTask.trim().isEmpty()) {
                             listModel.set(index, newTask);
-                            saveTasks(); // Autosave after editing a task
+                            saveTasks(); // Save task list after editing
                         }
                     }
                 }
@@ -93,10 +100,11 @@ public class Main {
 
         frame.setVisible(true);
 
-        // Load tasks on startup
+        // Load tasks from file on startup
         loadTasks();
     }
 
+    // Custom renderer to style completed tasks differently
     static class TaskCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -115,6 +123,7 @@ public class Main {
         }
     }
 
+    // Save tasks to a file
     private static void saveTasks() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("tasks.txt"))) {
             for (int i = 0; i < listModel.size(); i++) {
@@ -126,13 +135,14 @@ public class Main {
         }
     }
 
+    // Load tasks from a file
     private static void loadTasks() {
         try (Scanner scanner = new Scanner(new File("tasks.txt"))) {
             while (scanner.hasNextLine()) {
                 listModel.addElement(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
-            // No file exists yet, so nothing to load
+            // File not found, nothing to load
         }
     }
 }
